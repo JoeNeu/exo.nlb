@@ -3,13 +3,13 @@ data "exoscale_compute_template" "ubuntu" {
   name = var.template
 }
 
-resource "exoscale_instance_pool" "joes_service" {
+resource "exoscale_instance_pool" "instancepool" {
   zone = var.zone
-  name = "joe_instancepool"
+  name = "jn_instancepool"
   template_id = data.exoscale_compute_template.ubuntu.id
   service_offering = "micro"
   size = 2
   disk_size = 10
-  security_group_ids = [exoscale_security_group.joes_sec.id]
-  user_data = file("userdata.sh")
+  security_group_ids = [exoscale_security_group.super_secure.id]
+  user_data = file("./Userdata/nginx.sh")
 }
