@@ -3,20 +3,22 @@ resource "exoscale_security_group" "super_secure" {
   description = "Security Group for Joe's Computing Cluster"
 }
 
-resource "exoscale_security_group_rule" "loadGenerator" {
+resource "exoscale_security_group_rules" "internal" {
   security_group_id = exoscale_security_group.super_secure.id
-  type = "INGRESS"
-  protocol = "tcp"
-  cidr = "0.0.0.0/0"
-  start_port = 8080
-  end_port = 8080
+
+  ingress {
+    protocol  = "TCP"
+    ports     = ["3000"]
+    user_security_group_list = [exoscale_security_group.super_secure.name]
+  }
 }
 
-resource "exoscale_security_group_rule" "ssh" {
+resource "exoscale_security_group_rules" "open" {
   security_group_id = exoscale_security_group.super_secure.id
-  type = "INGRESS"
-  protocol = "tcp"
-  cidr = "0.0.0.0/0"
-  start_port = 22
-  end_port = 22
+
+  ingress {
+    protocol  = "TCP"
+    ports     = ["22", "8080", "9090"]
+    cidr_list = ["0.0.0.0/0"]
+  }
 }

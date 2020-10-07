@@ -1,8 +1,3 @@
-data "exoscale_compute_template" "ubuntu" {
-  zone = var.zone
-  name = var.template
-}
-
 resource "exoscale_instance_pool" "instancepool" {
   zone = var.zone
   name = "jn_instancepool"
