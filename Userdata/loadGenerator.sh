@@ -1,10 +1,11 @@
 #!/bin/bash
 
 set -e
-
+# Do not ask any questions and assume the defaults.
 export DEBIAN_FRONTEND=noninteractive
 
-# region Install Docker
+# region Add Docker Repository
+# https://docs.docker.com/engine/install/ubuntu/
 apt-get update
 apt-get install -y \
     apt-transport-https \
@@ -20,12 +21,14 @@ add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
    $(lsb_release -cs) \
    stable"
 apt-get update
+# Install Docker
 apt-get install -y docker-ce docker-ce-cli containerd.io
 # endregion
 
-# region Launch containers
 
 # Run the load generator
+# Provided from Janos Pasztor
+# https://github.com/janoszen
 docker run -d \
   --restart=always \
   -p 8080:8080 \
@@ -34,10 +37,6 @@ docker run -d \
 # Run the node exporter
 docker run -d \
   --restart=always \
+  --p 9100:9100 \
   --net="host" \
-  --pid="host" \
-  -v "/:/host:ro,rslave" \
-  quay.io/prometheus/node-exporter \
-  --path.rootfs=/host
-
-# endregion
+  prom/node-exporter

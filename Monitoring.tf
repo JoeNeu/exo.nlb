@@ -9,23 +9,8 @@ resource "exoscale_compute" "monitoring" {
   key_pair     = exoscale_ssh_keypair.joe.name
   security_group_ids = [exoscale_security_group.super_secure.id]
 
-  provisioner "remote-exec" {
-    script = "./Userdata/installDocker.sh"
-  }
 
-  provisioner "file" {
-    source = "./Userdata/prometheus.yml"
-    destination = "/etc/prometheus.yml"
-  }
-
-  provisioner "file" {
-    source = "./Userdata/instancepoolExplorer.sh"
-    destination = "/srv/exoscale/instancepoolExplorer.sh"
-  }
-
-  #Set Environment Variable
-  provisioner "file" {
-    content = <<EOF
+  user_data = <<EOF
 #!/bin/bash
 
 set -e
@@ -34,29 +19,35 @@ export EXOSCALE_KEY="${var.exoscale_key}"
 export EXOSCALE_SECRET="${var.exoscale_secret}"
 export EXOSCALE_REGION="${var.zone}"
 
+export DEBIAN_FRONTEND=noninteractive
+
+# Add Docker Repository
+# https://docs.docker.com/engine/install/ubuntu/
+apt-get update
+apt-get install -y \
+    apt-transport-https \
+    ca-certificates \
+    curl \
+    gnupg-agent \
+    software-properties-common
+
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+
+apt-key fingerprint 0EBFCD88
+add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+   $(lsb_release -cs) \
+   stable"
+apt-get update
+# Install Docker
+apt-get install -y docker-ce docker-ce-cli containerd.io
+
+# Run Service Discovery
+
+# Run Prometheus
 docker run -d \
   -p 9090:9090\
   -v /etc/prometheus.yml:/etc/prometheus/prometheus.yml \
   -v /srv/service-discovery/:/srv/service-discovery/ \
   prom/prometheus
 EOF
-    destination = "/srv/docker/start.sh"
-  }
-
-  provisioner "remote-exec" {
-    inline = [
-      "set -e",
-      "set -x",
-//      "sudo mkdir -p /srv/grafana",
-//      "sudo chmod 0777 /srv/grafana",
-      "sudo mkdir -p /srv/prometheus",
-      "sudo chmod 0777 /srv/prometheus",
-      "sudo chown -R root:root .",
-      // shell script needs +x
-      "sudo chmod +x /srv/docker/start.sh",
-      "sudo chmod +x /srv/exoscale/instancepoolExplorer.sh",
-      "sudo corntab -e "
-      "sudo /srv/docker/start.sh"
-    ]
-  }
 }
