@@ -2,10 +2,10 @@ require("request");
 const util = require('util');
 const fs = require('fs');
 
-var secretKey = "WZiVaq0_7X7IWrABwhsnjtq95biBtCFZmGZuj3gjWj0";// process.env.api_secret;
+var secretKey = "WZiVaq0_7X7IWrABwhsnjtq95biBtCFZmGZuj3gjWj0";// process.env.EXOSCALE_SECRET;
 var apiKey = "EXOfd8e873734f8157f27de47ee";// process.env.api_key;
 var clientUrl = "https://api.exoscale.ch/compute";
-const interval = 30 * 1000; // 30sec
+const interval = 15 * 1000; // 30sec
 
 console.log("NodeExporter Starting");
 
