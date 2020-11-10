@@ -1,6 +1,9 @@
 #ide
 **/.idea/*
 
+#pubkey
+**.pub
+
 # Local .terraform directories
 **/.terraform/*
 

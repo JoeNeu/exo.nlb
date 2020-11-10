@@ -1,4 +1,4 @@
 resource "exoscale_ssh_keypair" "joe" {
   name       = "joe"
-  public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAAAgQCXVfo41a9iSCejYy1mRtl+1hIUGTBeCZve5cvK2Bjn4UQMD6pnJuJOI/5njfhndcnWJ1aThnG8zATo4P4DeE4oh4TsjKa+pQWB1yl5KFdue7jM3+sNvvpv7jm0Y7HRfUDdolMm7N2cVP5jEJn/+nj6ZAT4AYtYshZHDCcWCy2Uqw=="
+  public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC11W77TOegP3vGt2fn9KwXNzksTIAEcBpbo+/2gvm5NOUUVgGKoiXVMC87Tv52p6oVIxOvLEDH1AhFkLVS6xPLv2xUkv/IwQW2cmTuxBmKBjk58cq8Zy1EGbtfpdoEYRzfWaWtEUHnyPFtnc8wDekTYZa2aLXmFzVcWYxot7hqEOVcDKTrzAPv9iKGy8yixWu8wfE9UoZVg1gkg7Vw/IrmA4JDFcoIIBvo/IGLbG271ZaHV5ZG/ChOyVSTSvC0IEN30e0HHHLKWr1ASxojC/orjeITnh/2UYQWPbfVIJm6xRp5W5JzI/h514vU+mAW5mir3bphPFQjKpSO67BVyNXL johan@Joe-Desktop"
 }
