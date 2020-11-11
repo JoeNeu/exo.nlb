@@ -1,6 +1,6 @@
 resource "exoscale_security_group" "super_secure" {
   name = "jn_sec"
-  description = "Security Group for Joe's Computing Cluster"
+  description = "Security Group managed by Joe's Terraform"
 }
 
 resource "exoscale_security_group_rules" "internal" {

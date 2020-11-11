@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# Abort if an error occurs
 set -e
 # Do not ask any questions and assume the defaults.
 export DEBIAN_FRONTEND=noninteractive
@@ -25,7 +26,6 @@ apt-get update
 apt-get install -y docker-ce docker-ce-cli containerd.io
 # endregion
 
-
 # Run the load generator
 # Provided from Janos Pasztor
 # https://github.com/janoszen
@@ -36,7 +36,9 @@ docker run -d \
 
 # Run the node exporter
 docker run -d \
-  --restart=always \
-  --p 9100:9100 \
+  -p 9100:9100 \
   --net="host" \
-  prom/node-exporter
+  --pid="host" \
+  -v "/:/host:ro,rslave" \
+  quay.io/prometheus/node-exporter \
+  --path.rootfs=/host

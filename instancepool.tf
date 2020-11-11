@@ -1,7 +1,7 @@
 resource "exoscale_instance_pool" "instancepool" {
   zone = var.zone
   name = "jn_instancepool"
-  description = "The pool to rule them all"
+  description = "Managed by Joe's Terraform"
   template_id = data.exoscale_compute_template.ubuntu.id
   service_offering = "micro"
   size = 2
@@ -10,5 +10,5 @@ resource "exoscale_instance_pool" "instancepool" {
   key_pair = exoscale_ssh_keypair.joe.name
   security_group_ids = [exoscale_security_group.super_secure.id]
 
-  user_data = file("./Userdata/loadGenerator.sh")
+  user_data = file("./userdata/loadGenerator.sh")
 }

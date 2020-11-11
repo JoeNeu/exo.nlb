@@ -1,6 +1,6 @@
 resource "exoscale_nlb" "network_load_balancer" {
   name = "jn_network_load_balancer"
-  description = "This is the Network Load Balancer for magnificent computing"
+  description = "Managed by Joe's Terraform"
   zone = var.zone
 }
 

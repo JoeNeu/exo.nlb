@@ -1,7 +1,7 @@
 FROM node:12
 
 #Set a work directory inside the application
-WORKDIR /usr/src/app
+WORKDIR /app/
 
 # Install app dependencies
 # A wildcard is used to ensure both package.json AND package-lock.json are copied
@@ -12,4 +12,4 @@ RUN npm install
 # Bundle app source
 COPY . .
 
-CMD [ "node", "serviceDiscovery.js" ]
+CMD [ "node", "servicediscovery.js" ]
