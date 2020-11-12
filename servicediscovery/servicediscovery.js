@@ -11,8 +11,8 @@ const interval = 		10 * 1000; // Milliseconds
 const filepath =		'../srv/service-discovery/config.json';
 
 if	(	
-		typeof secretKey		!== 'undefined' 	&& secretKey 		&& 
-		typeof apiKey			!== 'undefined' 	&& apiKey 			&& 
+		typeof secretKey		!== 'undefined' 	&& secretKey 		&&
+		typeof apiKey			!== 'undefined' 	&& apiKey 			&&
 		typeof zoneID 			!== 'undefined' 	&& zoneID			&&
 		typeof targetPort 		!== 'undefined' 	&& targetPort
 	) 
