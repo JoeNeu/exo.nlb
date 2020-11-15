@@ -27,7 +27,7 @@
     "request": "2.9.203"
   },
   "license": "MIT",
-  "main": "./lib/cloudstack",
+  "main": "cloudstack-license/cloudstack",
   "engines": {
     "node": ">= 0.4.0"
   }
