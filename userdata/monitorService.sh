@@ -46,6 +46,52 @@ scrape_configs:
         refresh_interval: 5s
 """ >> /etc/prometheus.yml
 
+# Grafana datasources
+echo """
+apiVersion: 1
+datasources:
+- name: Prometheus
+  type: prometheus
+  access: proxy
+  orgId: 1
+  url: http://localhost:9090
+  version: 1
+  editable: false
+""" >> /etc/grafana/provisioning/datasources/config.yml
+
+# Grafana n
+echo """
+notifiers:
+  - name: Scale up
+    type: webhook
+    uid: scale-up
+    org_id: 1
+    is_default: false
+    send_reminder: true
+    disable_resolve_message: true
+    frequency: "2m"
+    settings:
+      autoResolve: true
+      httpMethod: "POST"
+      severity: "critical"
+      uploadImage: false
+      url: "http://localhost:8090/up"
+  - name: Scale down
+    type: webhook
+    uid: scale-up
+    org_id: 1
+    is_default: false
+    send_reminder: true
+    disable_resolve_message: true
+    frequency: "2m"
+    settings:
+      autoResolve: true
+      httpMethod: "POST"
+      severity: "critical"
+      uploadImage: false
+      url: "http://localhost:8090/down"
+""" >> /etc/grafana/provisioning/notifiers/config.yml
+
 docker volume create --name DiscoveryConfig
 
 # Run the Service Discovery
