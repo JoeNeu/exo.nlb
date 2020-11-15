@@ -5,7 +5,7 @@ set -e
 # Do not ask any questions and assume the defaults.
 export DEBIAN_FRONTEND=noninteractive
 
-# region Add Docker Repository
+# region add Docker Repository
 # https://docs.docker.com/engine/install/ubuntu/
 apt-get update
 apt-get install -y \
@@ -26,19 +26,11 @@ apt-get update
 apt-get install -y docker-ce docker-ce-cli containerd.io
 # endregion
 
-# Create a config File for prometheus
+# Create config File for prometheus
 echo """
 global:
   scrape_interval: 10s
 scrape_configs:
-  - job_name: 'prometheus'
-    scrape_interval: 5s
-    static_configs:
-      - targets: ['localhost:9090']
-  - job_name: 'localMonitoring'
-    scrape_interval: 5s
-    static_configs:
-      - targets: ['localhost:9100']
   - job_name: ’discovery’
     file_sd_configs:
       - files:
@@ -46,9 +38,10 @@ scrape_configs:
         refresh_interval: 5s
 """ >> /etc/prometheus.yml
 
+# Create shared docker-volume
 docker volume create --name DiscoveryConfig
 
-# Run the Service Discovery
+# Run Service Discovery
 docker run -d \
   --name=ServiceDiscovery \
   --restart=always \
@@ -62,16 +55,6 @@ docker run -d \
 # Run Prometheus
 docker run -d \
   -p 9090:9090\
-  --net="host" \
   -v /etc/prometheus.yml:/etc/prometheus/prometheus.yml \
   --volumes-from ServiceDiscovery:ro \
   prom/prometheus
-
-# Run the node exporter
-docker run -d \
-  --restart=always \
-  --net="host" \
-  --pid="host" \
-  -v "/:/host:ro,rslave" \
-  quay.io/prometheus/node-exporter \
-  --path.rootfs=/host
