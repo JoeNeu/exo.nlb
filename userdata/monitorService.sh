@@ -41,12 +41,17 @@ scrape_configs:
 # Grafana datasources
 echo """
 apiVersion: 1
+
+deleteDatasources:
+  - name: Prometheus
+    orgId: 1
+
 datasources:
 - name: Prometheus
   type: prometheus
   access: proxy
-  orgId: 1
-  url: http://localhost:9090
+  uid: prometheus-uid
+  url: serviceDiscovery_ip:9090
   version: 1
   editable: false
 """ >> /etc/grafana/provisioning/datasources/config.yml
@@ -57,7 +62,6 @@ notifiers:
   - name: Scale up
     type: webhook
     uid: scale-up
-    org_id: 1
     is_default: false
     send_reminder: true
     disable_resolve_message: true
@@ -67,11 +71,10 @@ notifiers:
       httpMethod: "POST"
       severity: "critical"
       uploadImage: false
-      url: "http://localhost:8090/up"
+      url: "autoscaler_ip:8090/up"
   - name: Scale down
     type: webhook
     uid: scale-up
-    org_id: 1
     is_default: false
     send_reminder: true
     disable_resolve_message: true
@@ -81,7 +84,7 @@ notifiers:
       httpMethod: "POST"
       severity: "critical"
       uploadImage: false
-      url: "http://localhost:8090/down"
+      url: "autoscaler_ip:8090/down"
 """ >> /etc/grafana/provisioning/notifiers/config.yml
 
 # Create shared docker-volume
@@ -104,3 +107,22 @@ docker run -d \
   -v /etc/prometheus.yml:/etc/prometheus/prometheus.yml \
   --volumes-from ServiceDiscovery:ro \
   prom/prometheus
+
+# Run Autoscaler
+docker run -d \
+  --name=Autoscaler \
+  --restart=always \
+  -p 8090:8090 \
+  -e EXOSCALE_SECRET=${env_exoscale_secret} \
+  -e EXOSCALE_KEY=${env_exoscale_key} \
+  -e EXOSCALE_ZONE_ID=${env_exoscale_zone_id} \
+  -e EXOSCALE_INSTANCEPOOL_ID=${env_exoscale_instancepool_id} \
+  joeneu/exo-autoscaler
+
+# Run Grafana
+docker run -d \
+  -p 3000:3000 \
+  --name grafana \
+  --link ServiceDiscovery:serviceDiscovery_ip \
+  --link Autoscaler:autoscaler_ip \
+  grafana/grafana
