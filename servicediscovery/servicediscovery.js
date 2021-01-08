@@ -1,4 +1,4 @@
-require("request");
+require('request');
 const fs = require('fs');
 
 const secretKey = 		process.env.EXOSCALE_SECRET;
@@ -8,7 +8,8 @@ const targetPort = 		process.env.TARGET_PORT;
 
 const clientUrl = 		"https://api.exoscale.ch/compute";
 const interval = 		10 * 1000; // Milliseconds
-const filepath =		'../srv/service-discovery/config.json';
+const filepath =		'./srv/service-discovery/config.json';
+
 
 if	(	
 		typeof secretKey		!== 'undefined' 	&& secretKey 		&&
@@ -20,14 +21,14 @@ if	(
 	console.log("Service-Discovery started...")
 	setInterval(function() {
 		console.log("Fetching Instancepool...");
-		var cloudstack = new (require('./lib/cloudstack'))({
+		var exoscale = new (require('./cloudstack'))({
 			apiUri: clientUrl,
 			apiKey: apiKey,
 			apiSecret: secretKey
 		});
 		var ipAddresses = [];
 
-		cloudstack.exec('listInstancePools', {zoneid: zoneID}, function(error, response) {
+		exoscale.exec('listInstancePools', {zoneid: zoneID}, function(error, response) {
 			if (error) {
 				console.log("ERROR: Failed fetching from the Exoscale API. Retry.");
 			} else {
@@ -66,3 +67,12 @@ function isEmpty(obj) {
 
 	return JSON.stringify(obj) === JSON.stringify({});
 }
+
+process.on('SIGINT', function () {
+	console.log('SIGINT received...');
+	process.exit(0);
+});
+process.on('SIGTERM', function () {
+	console.log('SIGTERM received...');
+	process.exit(0);
+});
