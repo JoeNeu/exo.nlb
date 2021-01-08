@@ -11,21 +11,23 @@ const maxSize =         3;
 const minSize =         1;
 
 
-function getCountOfVirtualMachinesFromInstancePool() {
-    cloudstack.exec('getInstancePool', {id: instancepoolId, zoneid: zoneID}, function(error, response) {
-        if (error) {
-            console.log("ERROR: Failed fetching from the Exoscale API.");
-        } else {
-            if(!isEmpty(response) && response.count === 1){
-                return response.instancepool[0].size;
+async function getCountOfVirtualMachinesFromInstancePool() {
+    return new Promise(async (resolve, reject) => {
+        await initCloudstack().exec('getInstancePool', {id: instancepoolId, zoneid: zoneID}, function(error, response) {
+            if (error) {
+                console.log("ERROR: Failed fetching from the Exoscale API.");
+                reject(error);
+            } else {
+                if(!isEmpty(response) && response.count === 1){
+                    resolve(response.instancepool[0].size);
+                }
             }
-            return 0;
-        }
-    });
+        });
+    })
 }
 
 function scaleInstancePool(newSize) {
-    cloudstack.exec('scaleInstancePool', {id: instancepoolId, zoneid: zoneID, size: newSize}, function(error, response) {
+    initCloudstack().exec('scaleInstancePool', {id: instancepoolId, zoneid: zoneID, size: newSize}, function(error, response) {
         if (error) {
             console.log("ERROR: Failed fetching from the Exoscale API.");
             return;
@@ -33,6 +35,14 @@ function scaleInstancePool(newSize) {
         if(!isEmpty(response) && response.success === false){
             console.log("ERROR: Failed fetching from the Exoscale API.");
         }
+    });
+}
+
+function initCloudstack() {
+    return new (require('./cloudstack'))({
+        apiUri: clientUrl,
+        apiKey: apiKey,
+        apiSecret: secretKey
     });
 }
 
@@ -45,28 +55,27 @@ function isEmpty(obj) {
     return JSON.stringify(obj) === JSON.stringify({});
 }
 
-const server = http.createServer((request, response) => {
-    const { headers, method, url } = request;
+const server = http.createServer(async (request, response) => {
 
     request.on('error', (err) => {
         console.error("Error: " + err);
         response.statusCode = 403;
         response.end();
     });
-    if (request.method === 'POST' && (request.url === '/up' || request.url === '/down')) {
-        var instanceCount = 3; getCountOfVirtualMachinesFromInstancePool();
+    if (request.method === 'POST' && (request.url === '/up' || request.url === '/down' || request.url === '/test')) {
+        const instanceCount = await getCountOfVirtualMachinesFromInstancePool();
         console.log("Instancepool size: " + instanceCount);
         if (typeof instanceCount === 'undefined' || !instanceCount || instanceCount === 0) {
             response.statusCode = 404;
             response.end();
         }
-        if (request.url === '/up') {
+        else if(request.url === '/up') {
             if (instanceCount < maxSize) {
                 scaleInstancePool(instanceCount +1);
                 console.log('+++scale up:   New size: ' + (instanceCount +1));
             }
         }
-        if (request.url === '/down') {
+        else if(request.url === '/down') {
             if (instanceCount > minSize) {
                 scaleInstancePool(instanceCount -1);
                 console.log('---scale down: New size: ' + (instanceCount -1));
@@ -83,14 +92,18 @@ if	(
     typeof zoneID 			!== 'undefined' 	&& zoneID			&&
     typeof instancepoolId 	!== 'undefined' 	&& instancepoolId
 ) {
-    const cloudstack = new (require('./lib/cloudstack'))({
-        apiUri: clientUrl,
-        apiKey: apiKey,
-        apiSecret: secretKey
-    });
     server.listen(port, hostname, () => {
         console.log(`Server running at http://${hostname}:${port}/`);
     });
 } else {
     console.log("ERROR: You must provide these envs: EXOSCALE_SECRET, EXOSCALE_KEY, EXOSCALE_ZONE_ID");
 }
+
+process.on('SIGINT', function () {
+    console.log('SIGINT received...');
+    process.exit(0);
+});
+process.on('SIGTERM', function () {
+    console.log('SIGTERM received...');
+    process.exit(0);
+});
