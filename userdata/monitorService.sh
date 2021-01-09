@@ -29,7 +29,7 @@ apt-get install -y docker-ce docker-ce-cli containerd.io
 # Create config File for prometheus
 echo """
 global:
-  scrape_interval: 10s
+  scrape_interval: 15s
 scrape_configs:
   - job_name: ’discovery’
     file_sd_configs:
@@ -51,41 +51,41 @@ datasources:
   type: prometheus
   access: proxy
   uid: prometheus-uid
-  url: serviceDiscovery_ip:9090
+  url: prometheusIp:9090
   version: 1
   editable: false
 """ >> /etc/grafana/provisioning/datasources/config.yml
 
-# Grafana n
-echo """
-notifiers:
-  - name: Scale up
-    type: webhook
-    uid: scale-up
-    is_default: false
-    send_reminder: true
-    disable_resolve_message: true
-    frequency: "2m"
-    settings:
-      autoResolve: true
-      httpMethod: "POST"
-      severity: "critical"
-      uploadImage: false
-      url: "autoscaler_ip:8090/up"
-  - name: Scale down
-    type: webhook
-    uid: scale-up
-    is_default: false
-    send_reminder: true
-    disable_resolve_message: true
-    frequency: "2m"
-    settings:
-      autoResolve: true
-      httpMethod: "POST"
-      severity: "critical"
-      uploadImage: false
-      url: "autoscaler_ip:8090/down"
-""" >> /etc/grafana/provisioning/notifiers/config.yml
+## Grafana n
+#echo """
+#notifiers:
+#  - name: Scale up
+#    type: webhook
+#    uid: scale-up
+#    is_default: false
+#    send_reminder: true
+#    disable_resolve_message: true
+#    frequency: "2m"
+#    settings:
+#      autoResolve: true
+#      httpMethod: "POST"
+#      severity: "critical"
+#      uploadImage: false
+#      url: "autoscalerIp:8090/up"
+#  - name: Scale down
+#    type: webhook
+#    uid: scale-up
+#    is_default: false
+#    send_reminder: true
+#    disable_resolve_message: true
+#    frequency: "2m"
+#    settings:
+#      autoResolve: true
+#      httpMethod: "POST"
+#      severity: "critical"
+#      uploadImage: false
+#      url: "autoscalerIp:8090/down"
+#""" >> /etc/grafana/provisioning/notifiers/config.yml
 
 # Create shared docker-volume
 docker volume create --name DiscoveryConfig
@@ -103,7 +103,8 @@ docker run -d \
 
 # Run Prometheus
 docker run -d \
-  -p 9090:9090\
+  -p 9090:9090 \
+  --name=Prometheus \
   -v /etc/prometheus.yml:/etc/prometheus/prometheus.yml \
   --volumes-from ServiceDiscovery:ro \
   prom/prometheus
@@ -123,6 +124,6 @@ docker run -d \
 docker run -d \
   -p 3000:3000 \
   --name grafana \
-  --link ServiceDiscovery:serviceDiscovery_ip \
-  --link Autoscaler:autoscaler_ip \
+  --link Prometheus:prometheusIp \
+  --link Autoscaler:autoscalerIp \
   grafana/grafana
