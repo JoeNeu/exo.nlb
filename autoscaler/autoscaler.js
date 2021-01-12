@@ -5,7 +5,7 @@ const apiKey = 			process.env.EXOSCALE_KEY;
 const instancepoolId = 	process.env.EXOSCALE_INSTANCEPOOL_ID;
 const zoneID = 			process.env.EXOSCALE_ZONE_ID;
 const port =            process.env.LISTEN_PORT;
-const hostname =        '0.0.0.0';
+const hostname =        "0.0.0.0";
 const clientUrl = 		"https://api.exoscale.ch/compute";
 const maxSize =         3;
 const minSize =         1;
@@ -62,12 +62,8 @@ const server = http.createServer(async (request, response) => {
         response.statusCode = 403;
         response.end();
     });
-    if (request.method === 'POST' && (request.url === '/up' || request.url === '/down' || request.url === '/test')) {
-        console.log("received POST request: " + request.url);
-        if(request.url === '/test') {
-            response.statusCode = 200;
-            response.end();
-        }
+    if (request.url === '/up' || request.url === '/down') {
+        console.log("Received request: " + request.url);
         const instanceCount = await getCountOfVirtualMachinesFromInstancePool();
         console.log("Instancepool size: " + instanceCount);
         if (typeof instanceCount === 'undefined' || !instanceCount || instanceCount === 0) {
@@ -87,6 +83,9 @@ const server = http.createServer(async (request, response) => {
             }
         }
         response.statusCode = 200;
+        response.end();
+    } else {
+        response.statusCode = 404;
         response.end();
     }
 });
