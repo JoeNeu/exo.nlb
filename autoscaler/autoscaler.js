@@ -4,7 +4,7 @@ const secretKey = 		process.env.EXOSCALE_SECRET;
 const apiKey = 			process.env.EXOSCALE_KEY;
 const instancepoolId = 	process.env.EXOSCALE_INSTANCEPOOL_ID;
 const zoneID = 			process.env.EXOSCALE_ZONE_ID;
-const port =            8090;
+const port =            process.env.LISTEN_PORT;
 const hostname =        '0.0.0.0';
 const clientUrl = 		"https://api.exoscale.ch/compute";
 const maxSize =         3;
@@ -95,13 +95,14 @@ if	(
     typeof secretKey		!== 'undefined' 	&& secretKey 		&&
     typeof apiKey			!== 'undefined' 	&& apiKey 			&&
     typeof zoneID 			!== 'undefined' 	&& zoneID			&&
-    typeof instancepoolId 	!== 'undefined' 	&& instancepoolId
+    typeof instancepoolId 	!== 'undefined' 	&& instancepoolId   &&
+    typeof port 	        !== 'undefined' 	&& port
 ) {
     server.listen(port, hostname, () => {
         console.log(`Server running at http://${hostname}:${port}/`);
     });
 } else {
-    console.log("ERROR: You must provide these envs: EXOSCALE_SECRET, EXOSCALE_KEY, EXOSCALE_ZONE_ID");
+    console.log("ERROR: You must provide these envs: EXOSCALE_SECRET, EXOSCALE_KEY, EXOSCALE_ZONE_ID, EXOSCALE_INSTANCEPOOL_ID, LISTEN_PORT");
 }
 
 process.on('SIGINT', function () {

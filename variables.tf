@@ -20,6 +20,12 @@ variable "node_exporter_port" {
   default = "9100"
 }
 
+variable "autoscaler_listen_port" {
+  description = "Autoscaler Listen Port"
+  type = string
+  default = "8090"
+}
+
 variable "zone_id" {
   description = "Server Zone ID"
   type = string

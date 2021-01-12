@@ -135,6 +135,7 @@ docker run -d \
   -e EXOSCALE_KEY=${env_exoscale_key} \
   -e EXOSCALE_ZONE_ID=${env_exoscale_zone_id} \
   -e EXOSCALE_INSTANCEPOOL_ID=${env_exoscale_instancepool_id} \
+  -e LISTEN_PORT=${env_autoscaler_listen_port} \
   joeneu/exo-autoscaler
 
 # Run Grafana

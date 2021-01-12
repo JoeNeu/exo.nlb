@@ -2,7 +2,7 @@ resource "exoscale_compute" "monitoring" {
   zone = var.zone
   display_name = "Monitoring"
   template_id = data.exoscale_compute_template.ubuntu.id
-  size = "micro"
+  size = "small"
   disk_size = 10
   state = "Running"
 
@@ -15,6 +15,7 @@ resource "exoscale_compute" "monitoring" {
     env_exoscale_secret = var.exoscale_secret,
     env_exoscale_zone_id = var.zone_id,
     env_exoscale_instancepool_id = exoscale_instance_pool.instancepool.id,
-    env_node_exporter_port = var.node_exporter_port
+    env_node_exporter_port = var.node_exporter_port,
+    env_autoscaler_listen_port = var.autoscaler_listen_port
   })
 }
