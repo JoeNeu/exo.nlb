@@ -32,7 +32,7 @@ apt-get install -y docker-ce docker-ce-cli containerd.io
 docker run -d \
   --restart=always \
   -p 8080:8080 \
-  janoszen/http-load-generator:1.0.1
+  quay.io/janoszen/http-load-generator:1.0.1
 
 # Run the node exporter
 docker run -d \

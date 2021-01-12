@@ -18,7 +18,7 @@ resource "exoscale_security_group_rules" "open" {
 
   ingress {
     protocol  = "TCP"
-    ports     = ["22", "8080", "9090"]
+    ports     = ["22", "3000", "8080", "8090", "9090"]
     cidr_list = ["0.0.0.0/0"]
   }
 }
