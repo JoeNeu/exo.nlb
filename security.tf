@@ -8,7 +8,7 @@ resource "exoscale_security_group_rules" "internal" {
 
   ingress {
     protocol  = "TCP"
-    ports     = ["9100"]
+    ports     = ["3000", "8090", "9100", "9090"]
     user_security_group_list = [exoscale_security_group.super_secure.name]
   }
 }
@@ -18,7 +18,7 @@ resource "exoscale_security_group_rules" "open" {
 
   ingress {
     protocol  = "TCP"
-    ports     = ["22", "3000", "8080", "8090", "9090"]
+    ports     = ["22", "8080"]
     cidr_list = ["0.0.0.0/0"]
   }
 }
